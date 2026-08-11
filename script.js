@@ -1,6 +1,6 @@
 // Konfigurasi
 const config = {
-    namaSpesial: "Sayangku ❤️",
+    namaSpesial: "Perempuan Baik ku,Sayangku ❤️",
     tanggalUlangTahun: "2026-10-27T00:00:00", // Ganti dengan tanggal ulang tahun
     pesanUcapan: "Di hari spesial ini, aku ingin kamu tahu betapa berartinya kamu bagiku. Setiap detik bersamamu adalah hadiah terindah. Semoga semua impianmu menjadi kenyataan. I love you! 💕",
     pesanKejutan: [
