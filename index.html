@@ -19,9 +19,8 @@
 
     <!-- ==================== BACKGROUND MUSIC ==================== -->
     <audio id="birthdaySong" loop preload="auto">
-        <!-- Ganti URL ini dengan lagu romantis pilihanmu -->
+        <!-- Ganti dengan link lagu romantis favoritmu -->
         <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" type="audio/mpeg">
-        <!-- Alternative: Bisa juga pakai URL dari YouTube atau SoundCloud -->
     </audio>
 
     <!-- ==================== CONFETTI ==================== -->
@@ -32,7 +31,7 @@
         <div class="row w-100">
             <div class="col-12 col-md-8 col-lg-6 mx-auto">
                 <!-- Birthday Card -->
-                <div class="birthday-card">
+                <div class="birthday-card" id="birthdayCard">
                     <div class="card-border-glow"></div>
                     
                     <div class="text-center">
@@ -97,10 +96,10 @@
 
                         <!-- Buttons -->
                         <div class="button-group">
-                            <button class="btn btn-primary" onclick="playMusic()">
+                            <button class="btn btn-primary" id="musicBtn">
                                 <i class="fas fa-music"></i> Putar Musik
                             </button>
-                            <button class="btn btn-secondary" onclick="openSurprise()">
+                            <button class="btn btn-secondary" id="surpriseBtn">
                                 <i class="fas fa-gift"></i> Kejutan Cinta 💝
                             </button>
                         </div>
@@ -137,7 +136,7 @@
                 </div>
             </div>
 
-            <button class="close-surprise" onclick="closeSurprise()">
+            <button class="close-surprise" id="closeSurpriseBtn">
                 <i class="fas fa-heart"></i> Tutup
             </button>
         </div>
