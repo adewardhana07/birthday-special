@@ -29,10 +29,26 @@ const surpriseOverlay = document.getElementById('surpriseOverlay');
 const surpriseMessage = document.getElementById('surpriseMessage');
 
 // ============================================
+// DOM ELEMENTS
+// ============================================
+const musicBtn = document.getElementById('musicBtn');
+const surpriseBtn = document.getElementById('surpriseBtn');
+const closeSurpriseBtn = document.getElementById('closeSurpriseBtn');
+
+// ============================================
+// CEK APAKAH ELEMEN EXIST
+// ============================================
+console.log('Music Button:', musicBtn);
+console.log('Surprise Button:', surpriseBtn);
+console.log('Audio Element:', audio);
+
+// ============================================
 // BACKGROUND HEARTS
 // ============================================
 function createFloatingHearts() {
     const container = document.getElementById('bgHearts');
+    if (!container) return;
+    
     const heartSymbols = ['❤️', '♥️', '💕', '💗', '💖', '💝', '🌹'];
     
     for (let i = 0; i < 35; i++) {
@@ -84,42 +100,54 @@ updateCountdown();
 // FUNGSI MUSIK
 // ============================================
 function playMusic() {
-    const btn = document.querySelector('.btn-primary');
+    console.log('Play Music Dipanggil');
+    
+    if (!audio) {
+        console.error('Audio element tidak ditemukan!');
+        return;
+    }
     
     if (!musicPlaying) {
         audio.play()
             .then(() => {
                 musicPlaying = true;
-                btn.innerHTML = '<i class="fas fa-pause"></i> Hentikan Musik';
-                btn.onclick = stopMusic;
+                musicBtn.innerHTML = '<i class="fas fa-pause"></i> Hentikan Musik';
+                musicBtn.onclick = stopMusic;
                 launchConfetti(50);
+                console.log('Musik diputar');
             })
             .catch((error) => {
-                console.log('Autoplay tidak diizinkan. Klik lagi untuk memutar.');
+                console.log('Error memutar musik:', error);
                 // Fallback: coba lagi
-                audio.play();
+                audio.play().catch(e => console.log('Fallback gagal:', e));
             });
     }
 }
 
 function stopMusic() {
-    audio.pause();
-    audio.currentTime = 0;
+    console.log('Stop Music Dipanggil');
+    
+    if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+    }
     musicPlaying = false;
-    const btn = document.querySelector('.btn-primary');
-    btn.innerHTML = '<i class="fas fa-music"></i> Putar Musik';
-    btn.onclick = playMusic;
+    musicBtn.innerHTML = '<i class="fas fa-music"></i> Putar Musik';
+    musicBtn.onclick = playMusic;
+    console.log('Musik dihentikan');
 }
 
 // ============================================
 // FUNGSI SURPRISE
 // ============================================
 function openSurprise() {
+    console.log('Open Surprise Dipanggil');
+    
     // Pilih pesan cinta secara acak
     const randomIndex = Math.floor(Math.random() * CONFIG.loveMessages.length);
     surpriseMessage.textContent = CONFIG.loveMessages[randomIndex];
     
-    // Tampilkan popup dengan animasi
+    // Tampilkan popup
     surpriseOverlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';
     
@@ -132,7 +160,8 @@ function openSurprise() {
     }
     
     // Animasi gallery foto masuk satu per satu
-    document.querySelectorAll('.gallery-item').forEach((item, index) => {
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    galleryItems.forEach((item, index) => {
         item.style.opacity = '0';
         item.style.transform = 'scale(0.8) translateY(20px)';
         setTimeout(() => {
@@ -144,8 +173,39 @@ function openSurprise() {
 }
 
 function closeSurprise() {
+    console.log('Close Surprise Dipanggil');
     surpriseOverlay.style.display = 'none';
     document.body.style.overflow = 'auto';
+}
+
+// ============================================
+// EVENT LISTENERS - DENGAN CEK ELEMEN
+// ============================================
+
+// Event untuk tombol musik
+if (musicBtn) {
+    musicBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        console.log('Tombol Musik Diklik');
+        playMusic();
+    });
+}
+
+// Event untuk tombol surprise
+if (surpriseBtn) {
+    surpriseBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        console.log('Tombol Surprise Diklik');
+        openSurprise();
+    });
+}
+
+// Event untuk tombol close surprise
+if (closeSurpriseBtn) {
+    closeSurpriseBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        closeSurprise();
+    });
 }
 
 // Event listener untuk ESC
@@ -170,19 +230,21 @@ function launchConfetti(count = 100) {
     
     for (let i = 0; i < count; i++) {
         setTimeout(() => {
-            confetti({
-                particleCount: 3,
-                spread: 80,
-                origin: {
-                    y: Math.random() * 0.8 + 0.1,
-                    x: Math.random()
-                },
-                colors: [colors[Math.floor(Math.random() * colors.length)]],
-                startVelocity: Math.random() * 25 + 10,
-                gravity: Math.random() * 0.5 + 0.5,
-                drift: Math.random() * 2 - 1,
-                ticks: 200
-            });
+            if (typeof confetti !== 'undefined') {
+                confetti({
+                    particleCount: 3,
+                    spread: 80,
+                    origin: {
+                        y: Math.random() * 0.8 + 0.1,
+                        x: Math.random()
+                    },
+                    colors: [colors[Math.floor(Math.random() * colors.length)]],
+                    startVelocity: Math.random() * 25 + 10,
+                    gravity: Math.random() * 0.5 + 0.5,
+                    drift: Math.random() * 2 - 1,
+                    ticks: 200
+                });
+            }
         }, i * 15);
     }
 }
@@ -195,72 +257,27 @@ setTimeout(() => {
 // ============================================
 // EFEK PARALLAX 3D
 // ============================================
-const card = document.querySelector('.birthday-card');
+const card = document.getElementById('birthdayCard');
 let isHovering = false;
 
-card.addEventListener('mouseenter', () => {
-    isHovering = true;
-});
-
-card.addEventListener('mouseleave', () => {
-    isHovering = false;
-    card.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg) translateY(0px)';
-});
-
-document.addEventListener('mousemove', (e) => {
-    if (!isHovering) return;
-    
-    const rect = card.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = (e.clientY - rect.top) / rect.height;
-    
-    const rotateY = (x - 0.5) * 10;
-    const rotateX = (0.5 - y) * 10;
-    
-    card.style.transform = `
-        perspective(1000px) 
-        rotateY(${rotateY}deg) 
-        rotateX(${rotateX}deg)
-        translateY(-5px)
-    `;
-});
-
-// ============================================
-// EFEK KLIK TOMBOL
-// ============================================
-document.querySelectorAll('.btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        this.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-            this.style.transform = '';
-        }, 200);
+if (card) {
+    card.addEventListener('mouseenter', () => {
+        isHovering = true;
     });
-});
 
-// ============================================
-// GALERI FOTO - KLIK UNTUK PREVIEW
-// ============================================
-document.querySelectorAll('.gallery-item').forEach(item => {
-    item.addEventListener('click', function() {
-        const img = this.querySelector('img');
-        const overlay = this.querySelector('.overlay');
-        const imageUrl = img ? img.src : '';
-        const message = overlay ? overlay.textContent : 'Foto spesial 💕';
-        
-        // Efek animasi klik
-        this.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-            this.style.transform = 'scale(1.05)';
-        }, 200);
-        setTimeout(() => {
-            this.style.transform = 'scale(1)';
-        }, 400);
-        
-        // Tampilkan preview dengan alert
-        alert(`📸 ${message}\n\nIni adalah kenangan indah kita yang selalu aku simpan di hati. ❤️\n\n${imageUrl ? 'Foto: ' + imageUrl : ''}`);
+    card.addEventListener('mouseleave', () => {
+        isHovering = false;
+        card.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg) translateY(0px)';
     });
-});
 
-// ============================================
-// INISIALISASI
-// =========================================
+    document.addEventListener('mousemove', (e) => {
+        if (!isHovering) return;
+        
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width;
+        const y = (e.clientY - rect.top) / rect.height;
+        
+        const rotateY = (x - 0.5) * 10;
+        const rotateX = (0.5 - y) * 10;
+        
+        card.style.transform = `
